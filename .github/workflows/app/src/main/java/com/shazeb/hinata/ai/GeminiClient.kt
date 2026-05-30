@@ -10,7 +10,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
-private const val API_KEY = "ENTER_IN_APP_SETTINGS"
 private const val API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 class GeminiClient {
@@ -51,12 +50,12 @@ class GeminiClient {
     suspend fun sendMessage(
         userMessage: String,
         conversationHistory: List<Pair<String, String>>,
-        memories: String = ""
+        memories: String = "",
+        apiKey: String
     ): String = withContext(Dispatchers.IO) {
         try {
             val contents = JSONArray()
 
-            // System prompt exchange
             val systemContent = JSONObject().apply {
                 put("role", "user")
                 put("parts", JSONArray().put(
@@ -72,7 +71,6 @@ class GeminiClient {
             contents.put(systemContent)
             contents.put(systemResponse)
 
-            // Add conversation history
             for ((role, content) in conversationHistory) {
                 val geminiRole = if (role == "user") "user" else "model"
                 contents.put(JSONObject().apply {
@@ -83,7 +81,6 @@ class GeminiClient {
                 })
             }
 
-            // Add current message
             contents.put(JSONObject().apply {
                 put("role", "user")
                 put("parts", JSONArray().put(
@@ -101,7 +98,7 @@ class GeminiClient {
 
             val request = Request.Builder()
                 .url(API_URL)
-                .addHeader("x-goog-api-key", API_KEY)
+                .addHeader("x-goog-api-key", apiKey)
                 .addHeader("Content-Type", "application/json")
                 .post(requestBody.toString()
                     .toRequestBody("application/json".toMediaType()))
