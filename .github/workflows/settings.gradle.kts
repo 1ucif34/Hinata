@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "HinataAI"
+rootProject.name = "Hinata"
 include(":app")
