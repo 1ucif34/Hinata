@@ -16,18 +16,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.2'
-
-      - name: Make gradlew
+      - name: Generate Gradle Wrapper
         run: |
-          gradle wrapper
+          cd $GITHUB_WORKSPACE
+          gradle wrapper --gradle-version 8.2
           chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          cd $GITHUB_WORKSPACE
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
